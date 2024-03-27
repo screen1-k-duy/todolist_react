@@ -65,6 +65,12 @@ const ToDoList = () => {
     setTasks([]);
   };
 
+  const handleSetValue = (e,id) =>{
+    const taskName = tasks.find((t)=>(t.id===id));
+    console.log('dfsdfs',taskName.name);
+    taskName.name = taskName.name;
+    setTasks([...tasks])
+  }
   const handleClearDone = () => {
     const taskDone = tasks.filter((task) => task.checked === false);
     if (taskDone.length > 1) {
@@ -72,6 +78,7 @@ const ToDoList = () => {
     }
     setTasks(taskDone);
   };
+
 
   return (
     <>
@@ -101,7 +108,7 @@ const ToDoList = () => {
                       checked={task.checked}
                     />
                     <div className="p-2">
-                      <p className="task-content text-lg ">{task.name}</p>
+                      <input  type="text" className="task-content text-lg " value={task.name} onChange={(e)=>handleSetValue(e,task.id)} />
                     </div>
                     <Edit handleEdit={handleEdit} id={task.id} />
                     <Remove handleRemove={handleRemove} id={task.id} />
