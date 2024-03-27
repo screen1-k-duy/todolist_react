@@ -5,17 +5,18 @@ import Remove from "./Remove";
 import Done from "./Done";
 import { toast } from "react-toastify";
 import Edit from "./Edit";
+import Update from "./Update";
+
+//   get local data
+const getData = () => {
+  const storedTask = JSON.parse(localStorage.getItem("tasks"));
+  if (storedTask) {
+    return storedTask;
+  }
+};
 
 const ToDoList = () => {
   const notify = () => toast("Wow so easy!");
-
-  //   get local data
-  const getData = () => {
-    const storedTask = JSON.parse(localStorage.getItem("tasks"));
-    if (storedTask) {
-      return storedTask;
-    }
-  };
 
   const [work, setWork] = useState("");
   const [tasks, setTasks] = useState(getData() || []);
@@ -31,6 +32,7 @@ const ToDoList = () => {
       id: Math.random().toString(36).substring(7),
       name: work,
       checked: false,
+      isEditable: true,
     };
     setTasks([...tasks, newWork]);
     setWork("");
@@ -43,10 +45,52 @@ const ToDoList = () => {
   };
 
   // edit
-  const handleEdit = (item) => {
-    let task = tasks.find((x) => x.id === item);
-    console.log("name", task.name);
-    setWork(task.name)
+  const handleEdit = (id) => {
+    // let task = tasks.find((x) => x.id === item);
+    // console.log("name", task.name);
+    // setWork(task.name)
+    setTasks((prevTasks) => {
+      console.log("prev", prevTasks);
+      return prevTasks.map((task) => {
+        if (task.id === id) {
+          return { ...task, isEditable: false };
+        }
+        return task;
+      });
+    });
+    // console.log('ádasd');
+    // const foundTask = tasks.find((task) => task.id === id);
+    // return foundTask ? [{ ...foundTask, isEditable: false }] : tasks;
+  };
+
+  const handleSetValue = (id, newName) => {
+    // const taskName = tasks.find((t)=>(t.id===id));
+    // console.log('dfsdfs',taskName.name);
+    // taskName.name = taskName.name;
+    // setTasks([...tasks])
+    setTasks((prevTasks) => {
+      return prevTasks.map((task) => {
+        if (task.id === id) {
+          return { ...task, name: newName };
+        }
+        return task;
+      });
+    });
+  };
+
+  const handleUpadte = (id) => {
+    // console.log('sdasd',id);
+    setTasks((prevTasks) => {
+      return prevTasks.map((task) => {
+        if (task.id === id) {
+          return { ...task, isEditable: true };
+        }
+        return task;
+      });
+    });
+
+    //   const foundTask = tasks.find((task) => task.id === id);
+    // return foundTask ? { ...foundTask, isEditable: true } : tasks;
   };
 
   //   done
@@ -65,12 +109,6 @@ const ToDoList = () => {
     setTasks([]);
   };
 
-  const handleSetValue = (e,id) =>{
-    const taskName = tasks.find((t)=>(t.id===id));
-    console.log('dfsdfs',taskName.name);
-    taskName.name = taskName.name;
-    setTasks([...tasks])
-  }
   const handleClearDone = () => {
     const taskDone = tasks.filter((task) => task.checked === false);
     if (taskDone.length > 1) {
@@ -78,7 +116,6 @@ const ToDoList = () => {
     }
     setTasks(taskDone);
   };
-
 
   return (
     <>
@@ -108,8 +145,17 @@ const ToDoList = () => {
                       checked={task.checked}
                     />
                     <div className="p-2">
-                      <input  type="text" className="task-content text-lg " value={task.name} onChange={(e)=>handleSetValue(e,task.id)} />
+                      <input
+                        disabled={task.isEditable}
+                        type="text"
+                        className="task-content text-lg "
+                        value={task.name}
+                        onChange={(e) =>
+                          handleSetValue(task.id, e.target.value)
+                        }
+                      />
                     </div>
+                    <Update handleUpadte={handleUpadte} id={task.id} />
                     <Edit handleEdit={handleEdit} id={task.id} />
                     <Remove handleRemove={handleRemove} id={task.id} />
                   </div>
