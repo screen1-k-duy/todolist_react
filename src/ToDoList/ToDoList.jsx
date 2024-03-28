@@ -5,6 +5,7 @@ import Remove from "./Remove";
 import Done from "./Done";
 import { toast } from "react-toastify";
 import Edit from "./Edit";
+import Update from "./Update";
 
 const ToDoList = () => {
   const notify = () => toast("Wow so easy!");
@@ -31,6 +32,9 @@ const ToDoList = () => {
       id: Math.random().toString(36).substring(7),
       name: work,
       checked: false,
+      disabled: true,
+      showEdit: true,
+      showUpdate: false,
     };
     setTasks([...tasks, newWork]);
     setWork("");
@@ -44,9 +48,31 @@ const ToDoList = () => {
 
   // edit
   const handleEdit = (item) => {
-    let task = tasks.find((x) => x.id === item);
-    console.log("name", task.name);
-    setWork(task.name)
+    setTasks((prevTasks) => {
+      return prevTasks.map((t) => {
+        return t.id === item
+          ? { ...t, disabled: false, showEdit: false, showUpdate: true }
+          : t;
+      });
+    });
+  };
+
+  const handleSetValue = (e, id) => {
+    setTasks((prevTasks) => {
+      return prevTasks.map((task) => {
+        return task.id === id ? { ...task, name: e } : task;
+      });
+    });
+  };
+
+  const handleUpdate = (item) => {
+    setTasks((prevTasks) => {
+      return prevTasks.map((t) => {
+        return t.id === item
+          ? { ...t, disabled: true, showEdit: true, showUpdate: false }
+          : t;
+      });
+    });
   };
 
   //   done
@@ -65,12 +91,6 @@ const ToDoList = () => {
     setTasks([]);
   };
 
-  const handleSetValue = (e,id) =>{
-    const taskName = tasks.find((t)=>(t.id===id));
-    console.log('dfsdfs',taskName.name);
-    taskName.name = taskName.name;
-    setTasks([...tasks])
-  }
   const handleClearDone = () => {
     const taskDone = tasks.filter((task) => task.checked === false);
     if (taskDone.length > 1) {
@@ -79,11 +99,10 @@ const ToDoList = () => {
     setTasks(taskDone);
   };
 
-
   return (
     <>
       <div className="w-full h-screen bg-gray-100 pt-8">
-        <div className="bg-white p-3 max-w-md mx-auto">
+        <div className="bg-white p-3 max-w-xl mx-auto">
           <div className="text-center">
             <h1 className="text-3xl font-bold">ToDo App</h1>
             <div className="mt-4 flex">
@@ -108,9 +127,26 @@ const ToDoList = () => {
                       checked={task.checked}
                     />
                     <div className="p-2">
-                      <input  type="text" className="task-content text-lg " value={task.name} onChange={(e)=>handleSetValue(e,task.id)} />
+                      <input
+                        disabled={task.disabled}
+                        type="text"
+                        className="task-content text-lg "
+                        value={task.name}
+                        onChange={(e) =>
+                          handleSetValue(e.target.value, task.id)
+                        }
+                      />
                     </div>
-                    <Edit handleEdit={handleEdit} id={task.id} />
+                    <Update
+                      showUpdate={task.showUpdate}
+                      handleUpdate={handleUpdate}
+                      id={task.id}
+                    />
+                    <Edit
+                      showEdit={task.showEdit}
+                      handleEdit={handleEdit}
+                      id={task.id}
+                    />
                     <Remove handleRemove={handleRemove} id={task.id} />
                   </div>
                   <hr className="mt-2" />

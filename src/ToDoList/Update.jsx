@@ -1,10 +1,10 @@
-const Edit = ({showEdit, handleEdit, id }) => {
+const Update = ({ showUpdate, handleUpdate, id }) => {
   return (
     <>
       <button
-        style={{ display: showEdit ? 'flex' : 'none' }}
-        onClick={() => handleEdit(id)}
-        className="text-red-500 border-2 border-red-500 p-2 rounded-lg"
+        style={{ display: showUpdate ? "flex" : "none" }}
+        onClick={() => handleUpdate(id)}
+        className="flex text-red-500 border-2 border-red-500 p-2 rounded-lg"
       >
         <svg
           className="h-6 w-6 text-red-500"
@@ -19,10 +19,10 @@ const Edit = ({showEdit, handleEdit, id }) => {
           <line x1={15} y1={9} x2={9} y2={15} />
           <line x1={9} y1={9} x2={15} y2={15} />
         </svg>
-        <span>Edit</span>
+        <span>Update</span>
       </button>
     </>
   );
 };
 
-export default Edit;
+export default Update;
