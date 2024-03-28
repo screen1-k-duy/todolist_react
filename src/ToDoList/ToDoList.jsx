@@ -1,22 +1,24 @@
 import { useEffect, useState } from "react";
-import { IoMdCloseCircle } from "react-icons/io";
 import Add from "./Add";
 import Remove from "./Remove";
 import Done from "./Done";
 import { toast } from "react-toastify";
 import Edit from "./Edit";
 import Update from "./Update";
+import ClearCompleted from "./ClearCompleted";
+import ResetTasks from "./ResetTasks";
+import ContentTask from "./ContentTask";
+
+//   get local data
+const getData = () => {
+  const storedTask = JSON.parse(localStorage.getItem("tasks"));
+  if (storedTask) {
+    return storedTask;
+  }
+};
 
 const ToDoList = () => {
-  const notify = () => toast("Wow so easy!");
-
-  //   get local data
-  const getData = () => {
-    const storedTask = JSON.parse(localStorage.getItem("tasks"));
-    if (storedTask) {
-      return storedTask;
-    }
-  };
+  const notify = () => toast("Waiting....Clear Completed Task");
 
   const [work, setWork] = useState("");
   const [tasks, setTasks] = useState(getData() || []);
@@ -92,11 +94,12 @@ const ToDoList = () => {
   };
 
   const handleClearDone = () => {
-    const taskDone = tasks.filter((task) => task.checked === false);
+    const taskNotDone = tasks.filter((task) => task.checked === false);
+    const taskDone = tasks.filter((task) => task.checked === true);
     if (taskDone.length > 1) {
       notify();
     }
-    setTasks(taskDone);
+    setTasks(taskNotDone);
   };
 
   return (
@@ -126,17 +129,11 @@ const ToDoList = () => {
                       id={task.id}
                       checked={task.checked}
                     />
-                    <div className="p-2">
-                      <input
-                        disabled={task.disabled}
-                        type="text"
-                        className="task-content text-lg "
-                        value={task.name}
-                        onChange={(e) =>
-                          handleSetValue(e.target.value, task.id)
-                        }
-                      />
-                    </div>
+                    <ContentTask
+                      handleSetValue={handleSetValue}
+                      id={task.id}
+                      name={task.name}
+                    />
                     <Update
                       showUpdate={task.showUpdate}
                       handleUpdate={handleUpdate}
@@ -155,18 +152,8 @@ const ToDoList = () => {
             </ul>
           </div>
           <div className="mt-8">
-            <button
-              onClick={handleClearDone}
-              className="border-2 border-red-500 p-2 text-red-500"
-            >
-              Clear Completed Task
-            </button>
-            <button
-              onClick={handleReset}
-              className="border-2 border-indigo-500 p-2 text-indigo-500 ml-4"
-            >
-              Reset Todo List
-            </button>
+            <ClearCompleted handleClearDone={handleClearDone} />
+            <ResetTasks handleReset={handleReset} />
           </div>
         </div>
       </div>
